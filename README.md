@@ -1,4 +1,6 @@
-# DugiWorkshop
+DugiWorkshop
+============
+
 Dugi Workshop is an updated Legion Version of LilSparky's Workshop.
 
 Dugi Workshop adds auction-derived pricing information for trade skills right into the trade skill recipe frame. Each skill is evaluated for material costs and potential value of the item created. These two numbers are listed next to each skill in an easy-to-read format.
@@ -8,46 +10,44 @@ LilSparky's Workshop is a tradeskill addon designed to plug into the World of Wa
 Using data from the Auctioneer addon (and Enchantrix if available), LilSparky's Workshop will calculate how much a crafted item might be worth (its value) and how much it costs to craft or enchant an item (its cost). As an added convenience, the character level requirements for any crafted item are also displayed.
 
 Layout
--------
+------
 
 The data is layed out as follows:
 
     | Level | Skill name | Value | Cost |
 
-**Level**
+- **Level**:   
+  Level is pretty self explanatory. Enchant item level requirements are not represented here, just player levels for items. 
+  
+  Item levels are color coded based on item rarity.
+- **Value**: 
 
-Level is pretty self explanatory. Enchant item level requirements are not represented here, just player levels for items.
+  Value is determined by querying Auctioneer for a market price and vendor price, then querying Enchantrix (which also queries Auctioneer) for a disenchant value (if any). The results are compared and an item's "fate" is determined -- basically, which of the three prices is highest. The value has a single letter suffix to indicate the fate of the item: 'a' for auction, 'v' for vendor, 'd' for disenchanting.
 
-Item levels are color coded based on item rarity.
+  Left clicking on the value column will cycle the displayed value (best price, auction price, vendor price, disenchant price) should you wish to see any particular value (for example, if you're just interested in disenchant values).
 
-**Value**
+  Right clicking on the value column will give you the option to view values as a percentage of cost.
 
-Value is determined by querying Auctioneer for a market price and vendor price, then querying Enchantrix (which also queries Auctioneer) for a disenchant value (if any). The results are compared and an item's "fate" is determined -- basically, which of the three prices is highest. The value has a single letter suffix to indicate the fate of the item: 'a' for auction, 'v' for vendor, 'd' for disenchanting.
+  Items worth more than their cost have the value highlighted.
 
-Left clicking on the value column will cycle the displayed value (best price, auction price, vendor price, disenchant price) should you wish to see any particular value (for example, if you're just interested in disenchant values).
+  Crafting recipes (ie, enchanting) often don't have values.
 
-Right clicking on the value column will give you the option to view values as a percentage of cost.
+  Items that are bind on pick-up are listed as BOP when looking at their auction value.
 
-Items worth more than their cost have the value highlighted.
+- **Cost**
 
-Crafting recipes (ie, enchanting) often don't have values.
+  Cost is determined by iterating through the materials needed to create the item or enchant. Auction data is used to find market prices. Where auction data is unavailable, vendor selling prices are used (that is, how much it would cost to purchase that item from a vendor). The better your auctioneer database, the more accurate the cost.
 
-Items that are bind on pick-up are listed as BOP when looking at their auction value.
+  Mousing over the cost for any skill will give you a breakdown of that cost in a tooltip.
 
-**Cost**
+  If LibPeriodicTable-3.1 is loaded, it will be queried to determine if any of the reagents are available from vendors and if so, the vendor price will be favored over the auction price.
 
-Cost is determined by iterating through the materials needed to create the item or enchant. Auction data is used to find market prices. Where auction data is unavailable, vendor selling prices are used (that is, how much it would cost to purchase that item from a vendor). The better your auctioneer database, the more accurate the cost.
-
-Mousing over the cost for any skill will give you a breakdown of that cost in a tooltip.
-
-If LibPeriodicTable-3.1 is loaded, it will be queried to determine if any of the reagents are available from vendors and if so, the vendor price will be favored over the auction price.
-
-Reagents that are bind on pick-up are listed as BOP and don't contribute to the cost.
+  Reagents that are bind on pick-up are listed as BOP and don't contribute to the cost.
 
 Dependencies
 ------------
 
-**Supported Auction Scanners**
+### Auction Scanners
 
 LilSparky's Workshop relies on an auction scanner to get auction prices and vendor price lists for the vendor pricing system.
 
@@ -56,17 +56,23 @@ LilSparky's Workshop relies on an auction scanner to get auction prices and vend
 - **AuctionMaster:** AuctionMaster is fully supported.
 - **KC Items:** KC_Items/SellValues/AuctionSpy is currently supported as beta with mixed results.
 
-Optional Dependencies
----------------------
+### Optional Dependencies
 
 LilSparky's workshop is designed to take advantage of a number of other mods.
 
+- [**Enchantrix**][5]: for disenchant values
 
-- **Enchantrix**: To get disenchant values, Enchantrix must be loaded, but LilSparky's Workshop will run fine without it -- of course, only vendor and auction prices will be considered.
-- **Informant**: *(for vendor availablity)*
-- **LibPeriodictable:** *(for vendor availability)*
-- **Advanced Trade Skill Window:** LilSparky's Workshop will integrate seamlessly with Slarti's Advanced Trade Skill Window.
-- **Skillet**: LilSparky's Workshop is fully Skillet aware and has the added benefit of plugging into the Skillet sort method system to provide four additional sorting schemes:
+   To get disenchant values, Enchantrix must be loaded, but LilSparky's Workshop will run fine without it -- of course, only vendor and auction prices will be considered.
+- **Informant**: for vendor availability
+- [**LibPeriodicTable:**][6] for vendor availability
+
+### Trade Skill Interfaces
+
+- **Blizzard's Standard UI**
+- [**GnomeWorks**][3]
+- [**Doublewide Tradeskills**][2]
+- [**Advanced Trade Skill Window:**][4]
+- [**Skillet**:][1] LilSparky's Workshop is fully Skillet aware and has the added benefit of plugging into the Skillet sort method system to provide four additional sorting schemes:
 
   - Item Level (highest items first)
   - Item Value (currently displayed value -- ie, best, auction, vendor, or disenchant; most expensive first)
@@ -152,3 +158,10 @@ Version History
 - v0.90 -- feb.1, 2009
   - added support for AuctionLite and AuctionMaster (finally)
   - added support for Multiple Auctioneer pricing Modules
+
+[1]: https://www.curseforge.com/wow/addons/skillet
+[2]: https://wow.curseforge.com/projects/double-wide-trade-skills
+[3]: https://www.wowace.com/projects/gnomeworks
+[4]: https://wow.curseforge.com/projects/advanced-trade-skill-window
+[5]: https://wow.curseforge.com/projects/project-90
+[6]: https://www.curseforge.com/wow/addons/libperiodictable-3-1
