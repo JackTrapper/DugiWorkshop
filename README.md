@@ -51,10 +51,10 @@ Dependencies
 
 LilSparky's Workshop relies on an auction scanner to get auction prices and vendor price lists for the vendor pricing system.
 
-- **Auctioneer**: Auctioneer has support for multiple modules (whichever are loaded).  Right-click the cost or value price to select from a drop down of possible pricing modules.  "Market" is the default.  "Appraiser" will use whatever module you have selected with the Appaiser module.
-- **AuctionLite**: AuctionLite is fully supported.
-- **AuctionMaster:** AuctionMaster is fully supported.
-- **KC Items:** KC_Items/SellValues/AuctionSpy is currently supported as beta with mixed results.
+- [**Auctioneer**][7]: Auctioneer has support for multiple modules (whichever are loaded).  Right-click the cost or value price to select from a drop down of possible pricing modules.  "Market" is the default.  "Appraiser" will use whatever module you have selected with the Appaiser module.
+- [**AuctionLite**][8]: AuctionLite is fully supported.
+- [**AuctionMaster**][9]: AuctionMaster is fully supported.
+- [**KC_Items**][10]: KC_Items/SellValues/AuctionSpy is currently supported as beta with mixed results.
 
 ### Optional Dependencies
 
@@ -165,3 +165,7 @@ Version History
 [4]: https://wow.curseforge.com/projects/advanced-trade-skill-window
 [5]: https://wow.curseforge.com/projects/project-90
 [6]: https://www.curseforge.com/wow/addons/libperiodictable-3-1
+[7]: https://wow.curseforge.com/projects/auctioneer
+[8]: https://www.wowace.com/projects/auctionlite
+[9]: https://wow.curseforge.com/projects/auctionmaster
+[10]: https://wow.curseforge.com/projects/project-1043
