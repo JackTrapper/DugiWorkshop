@@ -2979,7 +2979,7 @@ master:Show()
 	function LSW:Initialize()
 		master:UnregisterEvent("TRADE_SKILL_SHOW")
 		OnLoad()
-		master:RegisterEvent("TRADE_SKILL_UPDATE")
+		--master:RegisterEvent("TRADE_SKILL_UPDATE") removed in BfA 80000
 		master:RegisterEvent("MODIFIER_STATE_CHANGED")
 		master:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
 		UpdateWindow()
