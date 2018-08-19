@@ -818,7 +818,7 @@ do
 
 
 	local function GenerateReagentOverrideMenu()
-		local reagentList = recipeCache.reagents[currentRecipe]
+		local reagentList = recipeCache.reagents[currentRecipe] or {}
 
 		local menu = {}
 
@@ -2791,8 +2791,14 @@ do
 		end
 	end
 
+    local runAuctionDataUpdate = false
 
 	local function AuctionDataUpdate()
+        if gAtr_FullScanState ~= 0 then
+            runAuctionDataUpdate = true
+            return
+        end
+    
 		local num, totalNum = GetNumAuctionItems("list")
 
 		for i=1,num do
@@ -2911,6 +2917,12 @@ master:Show()
 
 
 	master:SetScript("OnUpdate", function (frame, elapsed)
+    
+        if gAtr_FullScanState == 0 and runAuctionDataUpdate then
+            runAuctionDataUpdate = false
+            AuctionDataUpdate()
+        end
+        
 		if timerList then
 			for name,timer in pairs(timerList) do
 				if timer.delete then
