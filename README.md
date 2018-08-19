@@ -51,18 +51,16 @@ Dependencies
 
 LilSparky's Workshop relies on an auction scanner to get auction prices and vendor price lists for the vendor pricing system.
 
+- [**Auctionator**][11]
+- [**AuctionLite**][8]
+- [**AuctionMaster**][9]
 - [**Auctioneer**][7]: Auctioneer has support for multiple modules (whichever are loaded).  Right-click the cost or value price to select from a drop down of possible pricing modules.  "Market" is the default.  "Appraiser" will use whatever module you have selected with the Appaiser module.
-- [**AuctionLite**][8]: AuctionLite is fully supported.
-- [**AuctionMaster**][9]: AuctionMaster is fully supported.
-- [**KC_Items**][10]: KC_Items/SellValues/AuctionSpy is currently supported as beta with mixed results.
 
 ### Optional Dependencies
 
 LilSparky's workshop is designed to take advantage of a number of other mods.
 
-- [**Enchantrix**][5]: for disenchant values
-
-   To get disenchant values, Enchantrix must be loaded, but LilSparky's Workshop will run fine without it -- of course, only vendor and auction prices will be considered.
+- [**Enchantrix**][5]: for disenchant values (only vendor and auction prices will be considered)
 - **Informant**: for vendor availability
 - [**LibPeriodicTable:**][6] for vendor availability
 
@@ -169,3 +167,4 @@ Version History
 [8]: https://www.wowace.com/projects/auctionlite
 [9]: https://wow.curseforge.com/projects/auctionmaster
 [10]: https://wow.curseforge.com/projects/project-1043
+[11]: https://wow.curseforge.com/projects/auctionator
