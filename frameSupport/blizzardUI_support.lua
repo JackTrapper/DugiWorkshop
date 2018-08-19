@@ -67,7 +67,7 @@ do
             end
 		end
         
-		local _, name = C_TradeSkillUI.GetTradeSkillLine()
+		--local _, name = C_TradeSkillUI.GetTradeSkillLine()
 		--TradeSkillFrameTitleText:SetText(name.." ("..LSW.version..")")
 	end
 

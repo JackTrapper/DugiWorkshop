@@ -3,8 +3,8 @@
 ## Notes: Dugi Workshop mod for Trade Skills
 ## Notes: Provides Auction-derived prices for Trade Skills
 ## Author: lilsparky
-## Version: r200
-## X-Revision: 200
+## Version: r201
+## X-Revision: 201
 ## X-Category: Tradeskill
 ## RequiredDeps:
 ## OptionalDeps: Auc-Advanced, Enchantrix, Informant, AdvancedTradeSkillWindow, KC_Items, Skillet, SellFish, ItemPriceTooltip, Valuation, ItemDataCache, LibPeriodicTable-3.1, DoubleWideTradeSkill, AuctionMaster, AuctionLite, Auctionator, TradeSkillMaster_AuctionDB

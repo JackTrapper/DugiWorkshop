@@ -1,12 +1,12 @@
 do
 
 	local function AuctionMarketPrice(itemID)
-		local marketValue, currentQuantity, lastScan, seen, minBuyout = TSMAPI:GetData("market", itemID)
+		local marketValue, currentQuantity, lastScan, seen, minBuyout = TSMAPI.Conversions:GetData(itemID)
 		return marketValue, seen
 	end
 	
 	local function AuctionMinBuyout(itemID)
-		local marketValue, currentQuantity, lastScan, seen, minBuyout = TSMAPI:GetData("market", itemID)
+		local marketValue, currentQuantity, lastScan, seen, minBuyout = TSMAPI.Conversions:GetData(itemID)
 		if currentQuantity ~= nil and currentQuantity > 0 then
 			return minBuyout, currentQuantity
 		else

@@ -89,6 +89,11 @@ function DugiWorkshopLuaUtils:ThreadInProgress(threadName)
 end
 
 
+function DugiWorkshopLuaUtils:Delay(timeSec, function_)
+    C_Timer.After(timeSec, function_)
+end
+
+
 --/run print(GetNumTradeSkills_dugi())
 --/run print(GetNumTradeSkills())
 --/run print(GetTradeSkillInfo(4))
@@ -1689,6 +1694,11 @@ do
 	local updateIterateRefreshTime = 0
 
 	local function UpdateIterator(timer)
+    
+        if TSMCraftingTradeSkillFrame and TSMCraftingTradeSkillFrame:IsShown() then
+            return 
+        end
+    
         local allRecipeIDs = C_TradeSkillUI.GetFilteredRecipeIDs()
         local recipeID = allRecipeIDs[updateIterateSkill]    
 		local object = GetTradeSkillInfo_dugi(recipeID)
@@ -2826,12 +2836,28 @@ master:Show()
         end)
 		
 	end
+    
+    local function OnTradeSkillWindowShow()
+        LSW:Initialize()
+        UpdateWindow()
+    end
 
 	master:SetScript("OnEvent", function(frame, event, arg1, arg2)
-    
 		if event == "TRADE_SKILL_SHOW" then
-            LSW:Initialize()
-            UpdateWindow()
+        
+            --For #185 Fix Dugi Workshop conflict with TSM
+            if TSMAPI then
+                DugiWorkshopLuaUtils:CreateThread("wait_for_TSM", function()
+                    while not TradeSkillTypeColor do
+                        coroutine.yield()
+                    end
+                    
+                    OnTradeSkillWindowShow()
+                end)
+            else
+                OnTradeSkillWindowShow()
+            end
+
 		end
 		if event == "TRADE_SKILL_UPDATE" then
 			if C_TradeSkillUI.GetTradeSkillLine() then
