@@ -1562,7 +1562,14 @@ do
 				cache.bestCost = bestCost or 0
 
 
-				local canCraft = cache.canCraft and (type(cache.canCraft) ~= "table" or (LSW[cache.canCraft[1]] >= cache.canCraft[2]))
+				local canCraft = cache.canCraft;
+				if (type(cache.canCraft) == "table") then
+					local thing1 = LSW[cache.canCraft[1] or 0] or 0;
+					local thing2 = cache.canCraft[2] or 0;
+					if (thing1 >= thing2) then
+						canCraft = true;
+					end;
+				end;
 
 				if (not LSWConfig.personalCraftability or canCraft) and (LSWConfig.costBasis == COST_BASIS_PURCHASE or LSWConfig.forceCraft) and cache.craftSource then
 					local bestCraftCost
