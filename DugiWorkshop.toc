@@ -1,9 +1,9 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Dugi Workshop
 ## Notes: Dugi Workshop mod for Trade Skills
 ## Notes: Provides Auction-derived prices for Trade Skills
 ## Author: lilsparky, Dugi
-## Version: r208
+## Version: 8.0.1.209
 ## X-Revision: 208
 ## X-Category: Tradeskill
 ## RequiredDeps:
