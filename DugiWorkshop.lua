@@ -1926,32 +1926,46 @@ do
                 local right = 52
                 local width = 130 
             
-                button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
-                
-                if button.StarsFrame:IsShown() then
-                    right = right + 38
-                else
-                    width = 150
+                if button.StarsFrame then
+                    button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
                 end
                 
-                button.SkillUps:SetPoint("TOPRIGHT", -right, 0)
+               if button.StarsFrame and button.StarsFrame:IsShown() then
+                   right = right + 38
+               else
+                   width = 150
+               end
                 
-                button.Text:SetWidth(width)
+                if button.SkillUps then
+                    button.SkillUps:SetPoint("TOPRIGHT", -right, 0)
+                end
+                
+                if button.Text then
+                    button.Text:SetWidth(width)
+                end
             else
                 local right = 92
                 local width = 100
-            
-                button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
+
                 
-                if button.StarsFrame:IsShown() then
-                    right = right + 38
-                else
-                    width = 130
+                if button.StarsFrame then
+                    button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
+                    
+                    if button.StarsFrame:IsShown() then
+                        right = right + 38
+                    else
+                        width = 130
+                    end
+                end
+                     
+                if button.SkillUps then    
+                    button.SkillUps:SetPoint("TOPRIGHT", -right, 0)
                 end
                 
-                button.SkillUps:SetPoint("TOPRIGHT", -right, 0)
-                
-                button.Text:SetWidth(width)
+                if button.Text then   
+                    button.Text:SetWidth(width)
+                end
+       
             end
       --  else
         --[[    button.SkillUps:ClearAllPoints()
@@ -2516,12 +2530,19 @@ do
         local height = TradeSkillFrame.RecipeList.buttons[1]:GetHeight()
         local parent = TradeSkillFrame.RecipeList.buttons[1]:GetParent() -- TradeSkillFrame.RecipeList -- TradeSkillFrame.RecipeList.buttons[1]
         
+        if type(buttonIndex) == "table" then
+            buttonIndex = buttonIndex.index
+        end
+        
 		if buttonValueList[buttonIndex] then
             buttonValueList[buttonIndex]:SetPoint("TOPRIGHT", GetButtonValueLeftPosition(), -buttonIndex * height + height)
 			return buttonValueList[buttonIndex], buttonCostList[buttonIndex], buttonLevelList[buttonIndex]
 		end
 
-		local buttonValue = CreateFrame("Button", "LSWTradeSkillValue"..buttonIndex, parent, "LSWTradeSkillValueButtonTemplate")
+        
+        local name = "LSWTradeSkillValue"..buttonIndex
+        
+		local buttonValue = CreateFrame("Button", name, parent, "LSWTradeSkillValueButtonTemplate")
 		buttonValue:SetPoint("TOPRIGHT", GetButtonValueLeftPosition(), -buttonIndex * height + height)
 
 		buttonValue.text = _G["LSWTradeSkillValue"..buttonIndex.."Text"]

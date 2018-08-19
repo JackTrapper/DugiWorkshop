@@ -12,11 +12,8 @@ do
 
 
 	local function SortCompareItemValue_OLD(skill,a,b)  -- highest value first
-		local recipeID_A = LSW:FindID(GetTradeSkillItemLink(a))
-		local recipeID_B = LSW:FindID(GetTradeSkillItemLink(b))
-
-		local itemValueA = LSW:GetSkillValue(recipeID_A) or 0
-		local itemValueB = LSW:GetSkillValue(recipeID_B) or 0
+		local itemValueA = LSW:GetSkillValue(a.recipeID) or 0
+		local itemValueB = LSW:GetSkillValue(b.recipeID) or 0
 
 		if itemValueA > itemValueB then
 			return true
@@ -27,11 +24,8 @@ do
 
 
 	local function SortCompareReagentCost_OLD(skill,b,a)  -- lowest cost first so i swap b and a
-		local recipeID_A = LSW:FindID(GetTradeSkillItemLink(a))
-		local recipeID_B = LSW:FindID(GetTradeSkillItemLink(b))
-
-		local itemCostA = LSW:GetSkillCost(recipeID_A) or 0
-		local itemCostB = LSW:GetSkillCost(recipeID_B) or 0
+		local itemCostA = LSW:GetSkillCost(a.recipeID) or 0
+		local itemCostB = LSW:GetSkillCost(b.recipeID) or 0
 
 		if (itemCostA > itemCostB) then return true; end
 
@@ -40,14 +34,11 @@ do
 
 
 	local function SortCompareProfit_OLD(skill,a,b)  -- highest profit first
-		local recipeID_A = LSW:FindID(GetTradeSkillItemLink(a))
-		local recipeID_B = LSW:FindID(GetTradeSkillItemLink(b))
+		local itemValueA = LSW:GetSkillValue(a.recipeID) or 0
+		local itemValueB = LSW:GetSkillValue(b.recipeID) or 0
 
-		local itemValueA = LSW:GetSkillValue(recipeID_A) or 0
-		local itemValueB = LSW:GetSkillValue(recipeID_B) or 0
-
-		local itemCostA = LSW:GetSkillCost(recipeID_A) or 0
-		local itemCostB = LSW:GetSkillCost(recipeID_B) or 0
+		local itemCostA = LSW:GetSkillCost(a.recipeID) or 0
+		local itemCostB = LSW:GetSkillCost(b.recipeID) or 0
 
 		if LSWConfig.valueAsPercent then
 			local itemProfitA = itemValueA / (itemCostA+0.00001)
@@ -210,13 +201,13 @@ do
 
 
 		if string.find(Skillet.version, "LS") then
-			Skillet:AddRecipeSorter("LSW: Item Value", SortCompareItemValue)
-			Skillet:AddRecipeSorter("LSW: Reagent Cost", SortCompareReagentCost)
-			Skillet:AddRecipeSorter("LSW: Profit", SortCompareProfit)
+			Skillet:AddRecipeSorter("DW: Item Value", SortCompareItemValue)
+			Skillet:AddRecipeSorter("DW: Reagent Cost", SortCompareReagentCost)
+			Skillet:AddRecipeSorter("DW: Profit", SortCompareProfit)
 		else
-			Skillet:AddRecipeSorter("LSW: Item Value", SortCompareItemValue_OLD)
-			Skillet:AddRecipeSorter("LSW: Reagent Cost", SortCompareReagentCost_OLD)
-			Skillet:AddRecipeSorter("LSW: Profit", SortCompareProfit_OLD)
+			Skillet:AddRecipeSorter("DW: Item Value", SortCompareItemValue_OLD)
+			Skillet:AddRecipeSorter("DW: Reagent Cost", SortCompareReagentCost_OLD)
+			Skillet:AddRecipeSorter("DW: Profit", SortCompareProfit_OLD)
 		end
 
 
