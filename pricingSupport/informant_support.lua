@@ -31,7 +31,7 @@ do
 
 	local function VendorCost(itemID)
 		local itemInfo
-		if itemID then itemID = tonumber(itemID) end
+
 		if (itemID and itemID > 0) and (Informant) then
 			itemInfo = Informant.GetItem(itemID)
 		end

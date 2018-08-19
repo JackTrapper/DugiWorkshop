@@ -128,12 +128,27 @@ do
 
 
 	local function SkilletBeforeRecipeButtonShow(button, tradeskill, skill_index, list_offset)
-		LSW:SkillButtonShow(button)
+		local countText = _G[button:GetName() .. "Counts"]
+		local subSkillRankBar = _G[button:GetName() .. "SubSkillRankBar"]
+		
+		countText:Hide()
+		subSkillRankBar:Hide()
+		
+		local skill = button.skill
+
+		button.tradeSkillInfo = skill
+		
+		if button.skill and button.skill.recipeID then
+			LSW:SkillButtonShow(button, list_offset)
+		end
+		
 		return button;
 	end
 
 	local function SkilletBeforeRecipeButtonHide(button, tradeskill, skill_index, list_offset)
-		LSW:SkillButtonHide(button)
+		if button.skill and button.skill.recipeID then
+			LSW:SkilletButtonHide(button, list_offset)
+		end
 		return button;
 	end
 
@@ -163,6 +178,14 @@ do
 		if (title and Skillet.currentTrade) then
 			title:SetText("Skillet Trade Skills"..": "..((GetSpellInfo(Skillet.currentTrade)) or Skillet.currentTrade).." ("..LSW.version..")")
 		end
+		
+        if Skillet then
+            if amountOfTimers() == 0 then
+                LSW:CreateTimer("updateData", 0.1, LSW.UpdateData)
+            end
+            
+            RefreshAllDynamicButtons()
+        end
 	end
 
 

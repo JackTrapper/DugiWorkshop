@@ -607,6 +607,13 @@ do
 		progressBar.isShown = false
 		progressBar.initTime = GetTime()
         
+		--Performance optimization
+		if SkilletSkillList then
+			SkilletSkillList:HookScript("OnVerticalScroll", function()	
+				afterOnVerticalScroll = GetTime()
+			end)
+		end
+		
         TradeSkillFrame.RecipeList:SetScript("OnVerticalScroll", RefreshAllDynamicButtons)
         TradeSkillFrame.RecipeList:HookScript("OnMouseWheel", RefreshAllDynamicButtons)
 	end
@@ -1910,15 +1917,38 @@ do
 	end
 
     function RefreshAllDynamicButtons()
-        DugiWorkshopLuaUtils:foreach(TradeSkillFrame.RecipeList.buttons, function(button, buttonIndex)
-            LSW:SkillButtonHide(buttonIndex)
-            LSW:SkillButtonShow(button, buttonIndex)
-        end)
+		if Skillet then
+			DugiWorkshopLuaUtils:foreach(buttonValueList, function(button)
+				LSW:SkilletButtonHide(button.skilletButton) 
+				LSW:SkillButtonShow(button.skilletButton, button.buttonIndex)
+			end)
+		else
+			DugiWorkshopLuaUtils:foreach(TradeSkillFrame.RecipeList.buttons, function(button, buttonIndex)
+				LSW:SkillButtonHide(buttonIndex)
+				LSW:SkillButtonShow(button, buttonIndex)
+			end)
+		end
     end
 
+	C_Timer.NewTicker(1, function()
+		if afterOnVerticalScroll and (GetTime() - afterOnVerticalScroll) > 0.5 then
+			afterOnVerticalScroll = nil
+			Skillet:UpdateTradeSkillWindow()
+		end
+	end)
 
 	function LSW:SkillButtonShow(button, buttonIndex)
-        
+
+		--Performance optimization
+		if Skillet and (afterOnVerticalScroll and (GetTime() - afterOnVerticalScroll) < 0.5)  then
+			return 
+		end		
+
+		--For some reason sometimes the button is nill with skillet addon. This check will prevent lua error.
+		if not button then
+			return
+		end
+		
      --   if PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 1 then
            
             --button.StarsFrame:Show()
@@ -1927,6 +1957,7 @@ do
                 local width = 130 
             
                 if button.StarsFrame then
+					button.StarsFrame:ClearAllPoints()
                     button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
                 end
                 
@@ -1949,6 +1980,7 @@ do
 
                 
                 if button.StarsFrame then
+					button.StarsFrame:ClearAllPoints()
                     button.StarsFrame:SetPoint("TOPRIGHT", -right, 0)
                     
                     if button.StarsFrame:IsShown() then
@@ -1959,6 +1991,7 @@ do
                 end
                      
                 if button.SkillUps then    
+					button.SkillUps:ClearAllPoints()
                     button.SkillUps:SetPoint("TOPRIGHT", -right, 0)
                 end
                 
@@ -1998,9 +2031,15 @@ do
         end        
         
         --UNLEARNED_TAB == 2
-        if not button.tradeSkillInfo or not button.tradeSkillInfo.recipeID --[[or PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 2]] then
-            return 
-        end           
+		if Skillet then
+            if not button.tradeSkillInfo or not button.tradeSkillInfo.recipeID or buttonIndex == nil --[[or PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 2]] then
+                return 
+            end
+        else
+            if not button.tradeSkillInfo or not button.tradeSkillInfo.recipeID --[[or PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 2]] then
+                return 
+            end
+        end
     
         local recipeID = button.tradeSkillInfo.recipeID
     
@@ -2011,8 +2050,14 @@ do
 
 
 		local textButton = _G[LSW.buttonTextNamePattern and string.format(LSW.buttonTextNamePattern, recipeID)] or button
-
-		local buttonValue, buttonCost, buttonLevel = LSW:GetCreateDynamicButtons(recipeID, name, buttonIndex)
+		
+		local buttonValue, buttonCost, buttonLevel
+        
+        if Skillet then
+            buttonValue, buttonCost, buttonLevel = LSW:GetCreateDynamicButtons(recipeID, name, buttonIndex, button)
+        else
+            buttonValue, buttonCost, buttonLevel = LSW:GetCreateDynamicButtons(recipeID, name, buttonIndex)
+        end
 
 		width = LSW:GetSkillListWidth()
 
@@ -2151,6 +2196,13 @@ do
 	--	LSW_ChatMessage("Hide "..name);
 	end
 
+	function LSW:SkilletButtonHide(button)
+		local buttonValue, buttonCost, buttonLevel = LSW:GetCreateDynamicButtons(nil, nil, button.buttonIndex, button)
+
+		if (buttonCost) then buttonCost:Hide(); end
+		if (buttonValue) then buttonValue:Hide(); end
+		if (buttonLevel) then buttonLevel:Hide(); end
+	end	
 
 
 	local function ItemLevelButton_OnEnter(button)
@@ -2252,7 +2304,14 @@ do
         
         
         local buttonIndex = button.buttonIndex
-        local recipeID = TradeSkillFrame.RecipeList.buttons[buttonIndex].tradeSkillInfo.recipeID        
+		local recipeID
+		
+		--For skillet:
+        if Skillet then
+            recipeID = button.skilletButton.skill.recipeID		
+        else
+            recipeID = TradeSkillFrame.RecipeList.buttons[buttonIndex].tradeSkillInfo.recipeID 
+        end
         
 		local spaceLeft = (LSW.parentFrame:GetLeft() or 0)
 		local spaceRight = GetScreenWidth() - (LSW.parentFrame:GetRight() or 0)
@@ -2357,11 +2416,16 @@ do
 		if (frame:GetText() == " ") then return end
 
 		if (button=="RightButton") then
-			--local skillID =  frame:GetID()
             
-            local tradeSkillInfo = TradeSkillFrame.RecipeList.buttons[frame.buttonIndex].tradeSkillInfo
+            local recipeID
             
-            local recipeID = tradeSkillInfo.recipeID
+            --For skillet:
+            if Skillet then
+                recipeID = frame.skilletButton.skill.recipeID
+            else
+                recipeID = TradeSkillFrame.RecipeList.buttons[frame.buttonIndex].tradeSkillInfo.recipeID
+            end
+            
             local skillName, skillType, itemLink, recipeLink, itemID, recipeID = LSW:GetTradeSkillData(recipeID)
 
 			if recipeCache.reagents[recipeID] then
@@ -2399,7 +2463,15 @@ do
 		end
 
         local buttonIndex = button.buttonIndex
-        local recipeID = TradeSkillFrame.RecipeList.buttons[buttonIndex].tradeSkillInfo.recipeID
+        
+		local recipeID
+		
+		--For skillet:
+        if Skillet then
+            recipeID = button.skilletButton.skill.recipeID
+        else
+            recipeID = TradeSkillFrame.RecipeList.buttons[buttonIndex].tradeSkillInfo.recipeID
+        end
         
         local skillName, skillType, itemLink, recipeLink, itemID, recipeID = LSW:GetTradeSkillData(recipeID)
 
@@ -2523,27 +2595,50 @@ do
         end
     end
 
-	function LSW:GetCreateDynamicButtons(recipeID, buttonName, buttonIndex)
+	function LSW:GetCreateDynamicButtons(recipeID, buttonName, buttonIndex, parentButton)
 
 	--LSW_ErrorMessage("creating button "..id);
         
-        local height = TradeSkillFrame.RecipeList.buttons[1]:GetHeight()
-        local parent = TradeSkillFrame.RecipeList.buttons[1]:GetParent() -- TradeSkillFrame.RecipeList -- TradeSkillFrame.RecipeList.buttons[1]
+        local height
+        local parent
+        
+        if not Skillet then
+            height = TradeSkillFrame.RecipeList.buttons[1]:GetHeight()
+            parent = TradeSkillFrame.RecipeList.buttons[1]:GetParent() -- TradeSkillFrame.RecipeList -- TradeSkillFrame.RecipeList.buttons[1]
+        end
         
         if type(buttonIndex) == "table" then
             buttonIndex = buttonIndex.index
         end
         
-		if buttonValueList[buttonIndex] then
+		if parentButton then
+			parentButton.buttonIndex = buttonIndex
+		end
+		
+		if not Skillet and buttonValueList[buttonIndex] then
             buttonValueList[buttonIndex]:SetPoint("TOPRIGHT", GetButtonValueLeftPosition(), -buttonIndex * height + height)
 			return buttonValueList[buttonIndex], buttonCostList[buttonIndex], buttonLevelList[buttonIndex]
 		end
 
-        
         local name = "LSWTradeSkillValue"..buttonIndex
         
-		local buttonValue = CreateFrame("Button", name, parent, "LSWTradeSkillValueButtonTemplate")
-		buttonValue:SetPoint("TOPRIGHT", GetButtonValueLeftPosition(), -buttonIndex * height + height)
+		local buttonValue
+		
+        if not Skillet then
+			buttonValue = CreateFrame("Button", name, parent, "LSWTradeSkillValueButtonTemplate")
+			buttonValue:SetPoint("TOPRIGHT", GetButtonValueLeftPosition(), -buttonIndex * height + height)
+        else
+		
+			buttonValue = buttonValueList[buttonIndex]
+			
+			if not buttonValue then
+				buttonValue = CreateFrame("Button", name, parentButton, "LSWTradeSkillValueButtonTemplate")
+			end
+		
+            buttonValue:SetParent(parentButton)
+            buttonValue:ClearAllPoints()
+            buttonValue:SetPoint("TOPRIGHT",parentButton,   GetButtonValueLeftPosition(), 0)
+        end
 
 		buttonValue.text = _G["LSWTradeSkillValue"..buttonIndex.."Text"]
 		buttonValue.text:SetText("00 00")
@@ -2557,11 +2652,27 @@ do
 
 
 --buttonValue:GetWidth()
-		local buttonCost = CreateFrame("Button", "LSWTradeSkillCost"..buttonIndex, parent, "LSWTradeSkillCostButtonTemplate")
-		buttonCost:SetPoint("TOPRIGHT",-5, -buttonIndex * height + height)
+		local buttonCost
+
+		if not Skillet then
+			buttonCost = CreateFrame("Button", "LSWTradeSkillCost"..buttonIndex, parent, "LSWTradeSkillCostButtonTemplate")
+            buttonCost:SetPoint("TOPRIGHT",-5, -buttonIndex * height + height)
+		else
+            buttonCost = buttonCostList[buttonIndex]
+            if not buttonCost then
+                buttonCost = CreateFrame("Button", "LSWTradeSkillCost"..buttonIndex, parentButton, "LSWTradeSkillCostButtonTemplate")
+            end
+		    buttonCost:SetParent(parentButton)
+		    buttonCost:ClearAllPoints()
+		    buttonCost:SetPoint("TOPRIGHT", parentButton, "TOPRIGHT", 0, 0)
+        end
 
 		buttonCost.text = _G["LSWTradeSkillCost"..buttonIndex.."Text"]
 		buttonCost.text:SetText("00 00")
+		
+        if Skillet then
+		    buttonCost.text:SetPoint("TOPRIGHT", buttonCost, "TOPRIGHT", 0, 0)
+        end
 
 		buttonCost:SetWidth(60)
 		buttonCost:Hide()
@@ -2571,8 +2682,22 @@ do
 		buttonCost:SetScript("OnEnter", CostButton_OnEnter)
 		buttonCost:SetScript("OnLeave", CostButton_OnLeave)
 
-		local buttonLevel = CreateFrame("Button", "LSWTradeSkillItemLevel"..buttonIndex, parent, "LSWTradeSkillItemLevelTemplate")
-		buttonLevel:SetPoint("TOPLEFT", parent,"TOPLEFT", 8, -buttonIndex * height + height)
+		local buttonLevel
+
+        if not Skillet then
+            buttonLevel = CreateFrame("Button", "LSWTradeSkillItemLevel"..buttonIndex, parent, "LSWTradeSkillItemLevelTemplate")
+            buttonLevel:SetPoint("TOPLEFT", parent,"TOPLEFT", 8, -buttonIndex * height + height)
+        else
+            buttonLevel = buttonLevelList[buttonIndex]
+            
+            if not buttonLevel then
+                buttonLevel = CreateFrame("Button", "LSWTradeSkillItemLevel"..buttonIndex, parentButton, "LSWTradeSkillItemLevelTemplate")
+            end
+            
+            buttonLevel:SetParent(parentButton)
+            buttonLevel:ClearAllPoints()
+            buttonLevel:SetPoint("TOPLEFT", parentButton,"TOPLEFT", 3, 0)
+		end
 
 		buttonLevel.text = _G["LSWTradeSkillItemLevel"..buttonIndex.."Text"]
 		buttonLevel.text:SetText("00 00")
@@ -2596,8 +2721,14 @@ do
         buttonValue:SetFrameLevel(10000)
         buttonCost:SetFrameLevel(10000)
         buttonLevel:SetFrameLevel(10000)
-        
-        LSW:SkillButtonShow(TradeSkillFrame.RecipeList.buttons[buttonIndex], buttonIndex)
+
+        if not Skillet then
+            LSW:SkillButtonShow(TradeSkillFrame.RecipeList.buttons[buttonIndex], buttonIndex)
+        else
+            buttonValue.skilletButton = parentButton
+            buttonCost.skilletButton = parentButton
+            buttonLevel.skilletButton = parentButton
+        end
 
 		return buttonValue, buttonCost, buttonLevel
 	end
@@ -2815,7 +2946,7 @@ do
 	master:RegisterEvent("TRADE_SKILL_SHOW")
 master:Show()
 
-    local function amountOfTimers()
+    function amountOfTimers()
         local result = 0
         for name,timer in pairs(timerList) do
             result = result + 1
@@ -2853,7 +2984,10 @@ master:Show()
 		master:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
 		UpdateWindow()
         
-        LSW:CreateTimer("updateData-UpdateEvent", 0.1, LSW.UpdateData)
+		--todo: add condition if skillet frame is hidden	
+		if not Skillet then
+			LSW:CreateTimer("updateData-UpdateEvent", 0.1, LSW.UpdateData)
+		end
         
         hooksecurefunc(TradeSkillFrame.RecipeList, "OnUnlearnedTabClicked", function()
             UpdatePrices()
